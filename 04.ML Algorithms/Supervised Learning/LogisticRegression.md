@@ -260,6 +260,7 @@ conf_matrix = confusion_matrix(y_test, prediction_test)
 print("\nConfusion Matrix:\n", conf_matrix)
 ```
 
+### Visualization
 ```python
 sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
 plt.xlabel('Predicted')
