@@ -137,10 +137,13 @@ plt.show()
 ```python
 import pandas as pd
 import numpy as np
+from sklearn import datasets, svm
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.inspection import DecisionBoundaryDisplay
+from sklearn.metrics import precision_score, recall_score, f1_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 ```
@@ -218,7 +221,8 @@ clf.fit(X_train, y_train)
 
 ```python
 prediction_test = clf.predict(X_test)
-print(y_test.values, prediction_test)
+print("True labels:     ", y_test.values)
+print("Predicted labels:", prediction_test)
 ```
 
 ### Calculate Accuracy
@@ -241,13 +245,48 @@ conf_matrix = confusion_matrix(y_test, prediction_test)
 print("\nConfusion Matrix:\n", conf_matrix)
 ```
 
+### Calculate Precision/ Recall/ F1-score
+
+```python
+precision = precision_score(y_test, prediction_test, average='weighted') * 100
+recall = recall_score(y_test, prediction_test, average='weighted') * 100
+f1 = f1_score(y_test, prediction_test, average='weighted') * 100
+
+# Print results
+print(f"Precision: {precision:.2f}%")
+print(f"Recall: {recall:.2f}%")
+print(f"F1 Score: {f1:.2f}%")
+```
+
 ### Visualization
 
 ```python
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
-plt.xlabel('Predicted')
-plt.ylabel('Actual')
-plt.title('Confusion Matrix')
+# Title for the plot
+title = "SVC with linear kernel"
+
+x0 = X_train['X'] 
+x1 = X_train['Y'] 
+
+# Create the plot
+fig, ax = plt.subplots(figsize=(8, 6))
+disp = DecisionBoundaryDisplay.from_estimator(
+    clf,
+    X_train,
+    response_method="predict",
+    cmap=plt.cm.coolwarm,
+    alpha=0.75,
+    ax=ax,
+    xlabel=iris.feature_names[0],
+    ylabel=iris.feature_names[1],
+)
+
+# Scatter plot of training points
+ax.scatter(x0, x1, c=y_train, edgecolors="k")
+
+ax.set_xticks(())
+ax.set_yticks(())
+ax.set_title(title)
+
 plt.show()
 ```
 
