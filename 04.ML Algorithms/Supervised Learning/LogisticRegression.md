@@ -166,8 +166,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 ```
 
----
-
 ### Load Dataset
 
 ```python
@@ -176,23 +174,17 @@ print(df)
 print('\nNumber of rows and columns in the data set: ', df.shape)
 ```
 
----
-
 ### Show First 5 Rows
 
 ```python
 df.head()
 ```
 
----
-
 ### Dataset Description
 
 ```python
 df.describe()
 ```
-
----
 
 ### Check for Missing Values
 
@@ -201,16 +193,12 @@ missing_values = df.isnull().sum()
 print(missing_values)
 ```
 
----
-
 ### Features and Output (Label)
 
 ```python
 input_df = df.drop(columns='y')  # drop the label column
 target_df = df['y']
 ```
-
----
 
 ### Encoding Categorical Columns
 
@@ -226,8 +214,6 @@ drop_columns = ["X1", "X2", "X3"]
 input_df = input_df.drop(drop_columns, axis=1)
 ```
 
----
-
 ### Scaling Features
 
 ```python
@@ -236,15 +222,11 @@ scaled_features = scaler.fit_transform(input_df)
 input_df = pd.DataFrame(scaled_features, columns=input_df.columns)
 ```
 
----
-
 ### Split Data
 
 ```python
 X_train, X_test, y_train, y_test = train_test_split(input_df, target_df, test_size=0.3, random_state=1)
 ```
-
----
 
 ### Apply Logistic Regression
 
@@ -253,8 +235,6 @@ clf = LogisticRegression()
 clf.fit(X_train, y_train)
 ```
 
----
-
 ### Testing / Prediction
 
 ```python
@@ -262,20 +242,30 @@ prediction_test = clf.predict(X_test)
 print(y_test.values, prediction_test)
 ```
 
----
-
-### Model Evaluation
+### Calculate Accuracy
 
 ```python
 accuracy = accuracy_score(y_test, prediction_test)
 print("Accuracy:", accuracy)
+```
 
+### Calculate Classification Report
+```python
 print("\nClassification Report:\n", classification_report(y_test, prediction_test))
+```
 
+### Calculate Confusion Matrix
+```python
 conf_matrix = confusion_matrix(y_test, prediction_test)
+print("\nConfusion Matrix:\n", conf_matrix)
+```
+
+```python
 sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
 plt.xlabel('Predicted')
 plt.ylabel('Actual')
 plt.title('Confusion Matrix')
 plt.show()
 ```
+
+---
