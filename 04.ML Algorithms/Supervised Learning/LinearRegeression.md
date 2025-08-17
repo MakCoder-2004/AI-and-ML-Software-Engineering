@@ -172,8 +172,7 @@ target_df = df['x']
 ### Encoding Categorical Columns
 
 ```python
-# Replace with your own column names
-columns_to_encode = ["X1", "X2", "X3"]
+columns_to_encode = ["X1", "X2", "X3"]  # Replace with your own column names
 le = LabelEncoder()
 for col in columns_to_encode:
     input_df["encoded_" + col] = le.fit_transform(input_df[col])
