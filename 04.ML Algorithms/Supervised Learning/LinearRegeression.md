@@ -223,4 +223,15 @@ print('Mean Squared Error Value is : ', MSEValue)
 print('Median Absolute Error Value is : ', MdSEValue)
 ```
 
+### Visualization
+```python
+plt.figure(figsize=(10,5))
+sns.scatterplot(x=y_test, y=prediction_test, color="blue", alpha=0.6)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', linewidth=2)
+plt.xlabel("Actual Performance Index")
+plt.ylabel("Predicted Performance Index")
+plt.title("Actual vs Predicted Values")
+plt.show()
+```
+
 ---
