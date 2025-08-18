@@ -26,9 +26,7 @@ Support Vector Machine is a **supervised learning algorithm** used for both **cl
 
 For a linear SVM, the decision boundary is defined as:
 
-$$
-w^T x + b = 0
-$$
+$w^T x + b = 0$
 
 where:
 
@@ -43,9 +41,7 @@ The goal is to maximize the margin between the two classes.
 
 The hinge loss is used in SVM:
 
-$$
-J(w, b) = \frac{1}{2} ||w||^2 + C \sum_{i=1}^n \max(0, 1 - y_i (w^T x_i + b))
-$$
+$J(w, b) = \frac{1}{2} ||w||^2 + C \sum_{i=1}^n \max(0, 1 - y_i (w^T x_i + b))$
 
 where:
 
@@ -120,7 +116,6 @@ w, b = svm_train(X, y)
 
 # Plot decision boundary
 x_vals = np.linspace(X.min(), X.max(), 100)
-y_vals = -(w[0] * x_vals + b) / (1e-5 + 1)  # Linear boundary
 y_vals = np.zeros_like(x_vals)  # since we have 1D feature
 
 plt.plot(x_vals, y_vals, color='red')
@@ -276,8 +271,8 @@ disp = DecisionBoundaryDisplay.from_estimator(
     cmap=plt.cm.coolwarm,
     alpha=0.75,
     ax=ax,
-    xlabel=iris.feature_names[0],
-    ylabel=iris.feature_names[1],
+    xlabel="Feature 1",
+    ylabel="Feature 2",
 )
 
 # Scatter plot of training points
@@ -290,4 +285,75 @@ ax.set_title(title)
 plt.show()
 ```
 
+---
+
+## K-Fold Cross Validation with SVM
+
+```python
+from sklearn.model_selection import KFold
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import numpy as np
+```
+
+### Ensure that x and y are numpy arrays if they are pandas DataFrames
+```pyhton
+x = np.array(input_df)  # Features
+y = np.array(target_df)  # Labels
+```
+
+### Initialize 5-fold cross-validation
+```pyhton
+kf = KFold(n_splits=5, shuffle=True, random_state=42)
+```
+
+### Initialize lists to store metrics for each fold
+```python
+accuracies = []
+precisions = []
+recalls = []
+f1_scores = []
+```
+
+### Loop through each fold
+```python
+for fold, (train_index, test_index) in enumerate(kf.split(x)):
+    x_train, x_test = x[train_index], x[test_index]
+    y_train, y_test = y[train_index], y[test_index]
+    
+    # Initialize and train SVC
+    model = SVC(kernel='linear', random_state=42)
+    model.fit(x_train, y_train)
+    
+    # Predict on the test set
+    y_pred = model.predict(x_test)
+    
+    # Compute metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, average='weighted')
+    recall = recall_score(y_test, y_pred, average='weighted')
+    f1 = f1_score(y_test, y_pred, average='weighted')
+    
+    # Store metrics
+    accuracies.append(accuracy)
+    precisions.append(precision)
+    recalls.append(recall)
+    f1_scores.append(f1)
+    
+    print(f"Fold {fold + 1}:")
+    print(f"  Accuracy: {accuracy:.2f}")
+    print(f"  Precision: {precision:.2f}")
+    print(f"  Recall: {recall:.2f}")
+    print(f"  F1 Score: {f1:.2f}")
+    print()
+```
+
+### Print average metrics across all folds
+```python
+print("Average Metrics Across All Folds:")
+print(f"  Accuracy: {np.mean(accuracies):.2f}")
+print(f"  Precision: {np.mean(precisions):.2f}")
+print(f"  Recall: {np.mean(recalls):.2f}")
+print(f"  F1 Score: {np.mean(f1_scores):.2f}")
+```
 ---
