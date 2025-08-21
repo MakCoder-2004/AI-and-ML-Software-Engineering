@@ -1,7 +1,7 @@
 # K-Nearest Neighbors (KNN)
 
 K-Nearest Neighbors is a **supervised learning algorithm** used for **classification** and **regression**.
-It is based on the idea that a data point’s label is determined by the **labels of its nearest neighbors** in the feature space.
+It is based on the idea that a data point’s label is determined by the **labels (classification)** or **values (regression)** of its nearest neighbors in the feature space.
 
 ---
 
@@ -28,7 +28,7 @@ It is based on the idea that a data point’s label is determined by the **label
 
 * When you have a **small to medium-sized dataset** (since large datasets make it slow).
 * When data is **not too high-dimensional** (curse of dimensionality).
-* When you want an **easy-to-implement** algorithm for quick classification.
+* When you want an **easy-to-implement** algorithm for quick prediction.
 
 ---
 
@@ -52,7 +52,7 @@ print(df)
 
 ---
 
-## Visualize Class Distribution
+## Visualize Class Distribution (for classification problems)
 
 ```python
 plt.scatter(df.x1, df.x2, c=df.y, cmap='bwr')
@@ -64,39 +64,7 @@ plt.show()
 
 ---
 
-## Algorithm Implementation From Scratch
-
-```python
-# Euclidean distance
-def euclidean_distance(x1, x2):
-    return np.sqrt(np.sum((x1 - x2)**2))
-
-# Predict single sample
-def predict_single(X_train, y_train, x_test, k):
-    distances = [euclidean_distance(x_test, x_train) for x_train in X_train]
-    k_indices = np.argsort(distances)[:k]
-    k_neighbor_labels = [y_train[i] for i in k_indices]
-    # Majority vote
-    values, counts = np.unique(k_neighbor_labels, return_counts=True)
-    return values[np.argmax(counts)]
-
-# Predict multiple samples
-def predict(X_train, y_train, X_test, k):
-    return np.array([predict_single(X_train, y_train, x, k) for x in X_test])
-
-# Example dataset
-X = df[['x1','x2']].values
-y = df['y'].values
-
-# Predict using k=3
-y_pred = predict(X, y, X, k=3)
-
-print("Predictions:", y_pred)
-```
-
----
-
-## How to Implement the Algorithm (Using sklearn)
+## Implementation Using sklearn
 
 ### Libraries
 
@@ -105,8 +73,8 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, mean_squared_error, r2_score
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 import matplotlib.pyplot as plt
 import seaborn as sns
 ```
@@ -151,24 +119,27 @@ print(missing_values)
 ### Features and Output (Label)
 
 ```python
-input_df  = df.drop(columns='y')
-target_df = df['y']
+# For classification (assuming 'y' is categorical)
+X_class = df.drop(columns='y')
+y_class = df['y']
+
+# For regression (assuming 'target' is continuous)
+X_reg = df.drop(columns='target')
+y_reg = df['target']
 ```
 
 ---
 
-### Encoding Categorical Columns
+### Encoding Categorical Columns (if any)
 
 ```python
 # Replace with your own column names
 columns_to_encode = ["X1", "X2", "X3"]
 le = LabelEncoder()
 for col in columns_to_encode:
-    input_df["encoded_" + col] = le.fit_transform(input_df[col])
-
-# Drop original categorical columns
-drop_columns = ["X1", "X2", "X3"]
-input_df = input_df.drop(drop_columns, axis=1)
+    if col in X_class.columns:
+        X_class["encoded_" + col] = le.fit_transform(X_class[col])
+        X_class = X_class.drop(col, axis=1)
 ```
 
 ---
@@ -177,69 +148,47 @@ input_df = input_df.drop(drop_columns, axis=1)
 
 ```python
 scaler = MinMaxScaler()
-scaled_features = scaler.fit_transform(input_df)
-input_df      = pd.DataFrame(scaled_features, columns=input_df.columns)
+X_class = pd.DataFrame(scaler.fit_transform(X_class), columns=X_class.columns)
+X_reg   = pd.DataFrame(scaler.fit_transform(X_reg), columns=X_reg.columns)
 ```
 
 ---
+
+## KNN for Classification
 
 ### Split Data
 
 ```python
 X_train, X_test, y_train, y_test = train_test_split(
-    input_df, target_df, test_size=0.3, random_state=1
+    X_class, y_class, test_size=0.3, random_state=1
 )
 ```
 
----
-
-### Apply KNN
+### Apply KNN Classifier
 
 ```python
-knn = KNeighborsClassifier(n_neighbors=3)  # choose k=3
-knn.fit(X_train, y_train)
+knn_clf = KNeighborsClassifier(n_neighbors=5)
+knn_clf.fit(X_train, y_train)
 ```
-
----
 
 ### Testing / Prediction
 
 ```python
-prediction_test = knn.predict(X_test)
+prediction_test = knn_clf.predict(X_test)
 print(y_test.values, prediction_test)
 ```
 
----
-
-### Calculate Accuracy
+### Evaluate Performance
 
 ```python
 accuracy = accuracy_score(y_test, prediction_test)
-print("Accuracy:", accuracy)
-```
+print("Classification Accuracy:", accuracy)
 
----
-
-### Classification Report
-
-```python
 print("\nClassification Report:\n", classification_report(y_test, prediction_test))
-```
 
----
-
-### Confusion Matrix
-
-```python
 conf_matrix = confusion_matrix(y_test, prediction_test)
 print("\nConfusion Matrix:\n", conf_matrix)
-```
 
----
-
-### Visualization
-
-```python
 sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
 plt.xlabel('Predicted')
 plt.ylabel('Actual')
@@ -248,3 +197,46 @@ plt.show()
 ```
 
 ---
+
+## KNN for Regression
+
+### Split Data
+
+```python
+X_train_reg, X_test_reg, y_train_reg, y_test_reg = train_test_split(
+    X_reg, y_reg, test_size=0.3, random_state=1
+)
+```
+
+### Apply KNN Regressor
+
+```python
+knn_reg = KNeighborsRegressor(n_neighbors=5)
+knn_reg.fit(X_train_reg, y_train_reg)
+```
+
+### Testing / Prediction
+
+```python
+prediction_test_reg = knn_reg.predict(X_test_reg)
+```
+
+### Evaluate Performance
+
+```python
+mse = mean_squared_error(y_test_reg, prediction_test_reg)
+r2 = r2_score(y_test_reg, prediction_test_reg)
+
+print("Regression Mean Squared Error:", mse)
+print("Regression R2 Score:", r2)
+```
+
+### Visualization
+
+```python
+plt.scatter(y_test_reg, prediction_test_reg, color='blue')
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.title('KNN Regression: Actual vs Predicted')
+plt.show()
+```
