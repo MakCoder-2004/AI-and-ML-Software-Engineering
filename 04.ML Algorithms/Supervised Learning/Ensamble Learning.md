@@ -16,7 +16,6 @@ Ensemble learning combines multiple models (often called **"weak learners"**) to
 * Improves accuracy
 * Increases robustness
 
----
 
 ## Types of Ensemble Methods
 
@@ -35,8 +34,6 @@ Ensemble learning combines multiple models (often called **"weak learners"**) to
 * Train a separate model on each sample
 * Combine their outputs (e.g., by voting for classification or averaging for regression)
 * **Goal:** Reduce variance (make model more stable)
-
----
 
 ### Bagging — Real-World Applications
 
@@ -66,15 +63,11 @@ Ensemble learning combines multiple models (often called **"weak learners"**) to
 * Hard to overfit
 * Great baseline model
 
----
-
 ### Random Forest Advantages
 
 * Handles missing values
 * Works well with categorical & numerical data
 * Fast and easy to tune
-
----
 
 ### Random Forest — Real-World Applications
 
@@ -94,8 +87,6 @@ Ensemble learning combines multiple models (often called **"weak learners"**) to
 * Combines them into a strong model
 * **Goal:** Reduce bias and improve prediction
 
----
-
 ### Boosting — Real-World Applications
 
 * **Self-Driving Cars:** Object detection and decision-making
@@ -112,12 +103,6 @@ Ensemble learning combines multiple models (often called **"weak learners"**) to
 
 ---
 
-## Boosting vs Bagging
-
-(Comparison of characteristics, focus, and applications.)
-
----
-
 ## Popular Boosting Algorithms
 
 Boosting is an **ensemble learning technique**
@@ -131,6 +116,4 @@ Boosting is an **ensemble learning technique**
 | **LightGBM** | Very Fast | Medium-High      | ❌ No                | Large datasets          |
 | **CatBoost** | Medium    | Low              | ✅ Yes               | Mixed/categorical data  |
 
-
 ---
-
