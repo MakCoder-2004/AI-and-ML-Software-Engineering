@@ -1,0 +1,322 @@
+# Pandas in Python - Complete Study Guide (Illustrated)
+
+This guide covers Pandas in detail, with visualized concepts, explanations, and practical usage scenarios for each function. It also introduces Scikit-learn functions, explaining when and why to use them.
+
+---
+
+## Introduction to Pandas
+
+**Pandas** is a Python library for data analysis and manipulation.
+
+* Created by Wes McKinney in 2008.
+* Stands for "Panel Data" and "Python Data Analysis".
+* Works well with NumPy, Matplotlib, and Scikit-learn.
+
+**Installation:**
+
+```bash
+pip install pandas
+```
+
+**Import:**
+
+```python
+import pandas as pd
+```
+
+*Usage:* Always import Pandas as `pd` to follow community conventions.
+
+---
+
+## Reading Data
+
+**CSV Files**
+
+```python
+df = pd.read_csv('data.csv')
+```
+
+📌 *Use when:* Loading comma-separated data files.
+
+**Excel Files**
+
+```python
+df = pd.read_excel('data.xlsx')
+```
+
+📌 *Use when:* Working with Excel spreadsheets.
+
+**Multiple sheets:**
+
+```python
+xls = pd.ExcelFile('data.xlsx')
+df1 = pd.read_excel(xls, 'Sheet1')
+df2 = pd.read_excel(xls, 'Sheet2')
+```
+
+📌 *Use when:* You need data from specific sheets in one Excel file.
+
+**Selecting Data:**
+
+```python
+df.loc[0:5, ['Name', 'Salary']]  # label-based
+df.iloc[0:5, 0:2]                # position-based
+```
+
+📌 *Use when:* Extracting specific rows and columns.
+
+---
+
+## Viewing Data
+
+```python
+df.head(10)      # first 10 rows
+df.tail(5)       # last 5 rows
+df.info()        # structure & types
+df.describe()    # statistics
+df.dtypes        # column types
+df.shape         # dimensions
+df.columns       # column names
+```
+
+📌 *Use when:* Quickly exploring structure, column names, and basic stats.
+
+---
+
+## Data Cleaning
+
+**Missing Data:**
+
+```python
+df.dropna()              # remove rows with NaN
+df.fillna(0)             # replace NaN with 0
+df.fillna(df.mean())     # replace NaN with mean
+```
+
+📌 *Use when:* Handling incomplete datasets.
+
+**Duplicates:**
+
+```python
+df.drop_duplicates()     # remove duplicates
+df.duplicated()          # mark duplicates
+```
+
+📌 *Use when:* Removing or detecting repeated rows.
+
+**Strings:**
+
+```python
+df['Name'] = df['Name'].str.strip()   # trim spaces
+df['Name'] = df['Name'].str.lower()   # lowercase
+```
+
+📌 *Use when:* Standardizing text data.
+
+---
+
+## Filtering & Transformation
+
+```python
+df[df['Rating'] <= 5]                      # filter
+df['Rating'] = df['Rating'].clip(upper=5)   # limit values
+df.rename(columns={'OldName': 'NewName'})   # rename columns
+```
+
+📌 *Use when:* Selecting subsets, modifying, or cleaning data.
+
+Sorting:
+
+```python
+df.sort_values(by='Column', ascending=False)
+```
+
+📌 *Use when:* Organizing data for analysis.
+
+---
+
+## Grouping & Aggregation
+
+```python
+df.groupby('Category').mean()
+df.groupby('Category').agg({'Sales':'sum','Profit':'mean'})
+```
+
+📌 *Use when:* Summarizing data by categories.
+
+---
+
+## Combining DataFrames
+
+```python
+pd.merge(df1, df2, on='ID', how='inner')    # merge on common column
+pd.concat([df1, df2], axis=0)               # stack vertically
+```
+
+📌 *Use when:* Merging datasets or appending rows.
+
+---
+
+## Pivot Tables
+
+```python
+df.pivot_table(values='Sales', index='Category', columns='Region', aggfunc='sum')
+```
+
+📌 *Use when:* Summarizing data with multiple dimensions.
+
+---
+
+## Visualization
+
+```python
+import matplotlib.pyplot as plt
+df['Column'].hist()
+df.plot(kind='line', x='Date', y='Sales')
+plt.show()
+```
+
+📌 *Use when:* Quickly plotting data directly from Pandas.
+
+---
+
+## Scikit-learn Preprocessing
+
+### Difference Between `fit`, `transform`, and `fit_transform`
+
+| Method                                                                                                      | Purpose                                  | Syntax Example                                  | Example with Data                                   |
+| ----------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| `fit()`                                                                                                     | Learn parameters of transformation       | `estimator.fit(X)`                              | `estimator.fit(train_data)`                         |
+| `transform()`                                                                                               | Apply learned transformation to new data | `transformed_data = estimator.transform(X)`     | `transformed_data = estimator.transform(test_data)` |
+| `fit_transform()`                                                                                           | Learn and apply transformation to data   | `transformed_data = estimator.fit_transform(X)` | `transformed_data = estimator.fit_transform(data)`  |
+| 📌 *Use when:* `fit` is for training, `transform` for applying, and `fit_transform` for doing both at once. |                                          |                                                 |                                                     |
+
+**Example – Rescaling:**
+
+```python
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+df[['col1', 'col2']] = scaler.fit_transform(df[['col1', 'col2']])
+```
+
+📌 *Use when:* Scaling values between 0 and 1.
+
+**Normalization:**
+
+```python
+from sklearn.preprocessing import normalize
+df[['col1', 'col2']] = normalize(df[['col1', 'col2']], norm='l2')
+```
+
+📌 *Use when:* You want each row to have unit norm.
+
+**Binarization:**
+
+```python
+from sklearn.preprocessing import Binarizer
+binarizer = Binarizer(threshold=0.5)
+df[['col1']] = binarizer.fit_transform(df[['col1']])
+```
+
+📌 *Use when:* Converting numerical features to binary based on a threshold.
+
+**Standardization:**
+
+```python
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+df[['col1', 'col2']] = scaler.fit_transform(df[['col1', 'col2']])
+```
+
+📌 *Use when:* Making data mean=0 and variance=1.
+
+**Label Encoding:**
+
+```python
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['Category'] = le.fit_transform(df['Category'])
+```
+
+📌 *Use when:* Converting categories to numeric labels.
+
+**One-Hot Encoding:**
+
+```python
+from sklearn.preprocessing import OneHotEncoder
+ohe = OneHotEncoder(sparse=False)
+ohe_data = ohe.fit_transform(df[['Category']])
+```
+
+📌 *Use when:* Creating binary columns for each category.
+
+---
+
+## Data Imputation
+
+```python
+from sklearn.impute import SimpleImputer
+imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
+df[['col1']] = imputer.fit_transform(df[['col1']])
+```
+
+📌 *Use when:* Replacing missing values with mean.
+
+---
+
+## EDA (Exploratory Data Analysis)
+
+```python
+import seaborn as sns
+sns.heatmap(df.corr(), annot=True)
+```
+
+📌 *Use when:* Visualizing correlations between numeric variables.
+
+---
+
+## Additional Useful Functions
+
+Each of these is used when preparing or cleaning your dataset:
+
+```python
+data.isnull().sum()          # Missing value counts
+data.fillna(0, inplace=True) # Fill NaNs with 0
+data.dropna(inplace=True)    # Drop NaNs
+data.sort_values(by='col')   # Sort by column
+data.groupby('Category').mean() # Group and summarize
+data.rename(columns={'old': 'new'}, inplace=True) # Rename columns
+data.reset_index(drop=True, inplace=True) # Reset index
+data.set_index('col', inplace=True) # Set new index
+data['col'].value_counts()  # Frequency of values
+data['col'] = data['col'].apply(lambda x: x * 2) # Apply function
+data['col'].unique()        # Unique values
+data['col'].nunique()       # Count of unique values
+```
+
+---
+
+## Summary Table
+
+| Function            | Description & When to Use |
+| ------------------- | ------------------------- |
+| `read_csv()`        | Load CSV files            |
+| `read_excel()`      | Load Excel files          |
+| `head()`            | View first rows           |
+| `tail()`            | View last rows            |
+| `info()`            | Check structure           |
+| `describe()`        | Get statistics            |
+| `dropna()`          | Remove NaNs               |
+| `fillna()`          | Replace NaNs              |
+| `drop_duplicates()` | Remove duplicates         |
+| `duplicated()`      | Find duplicates           |
+| `loc[]`             | Select by labels          |
+| `iloc[]`            | Select by position        |
+| `groupby()`         | Group data                |
+| `merge()`           | Merge DataFrames          |
+| `concat()`          | Append DataFrames         |
+| `pivot_table()`     | Summarize multi-dimension |
+| `apply()`           | Apply custom functions    |
+| `sort_values()`     | Sort data                 |
+
+---
